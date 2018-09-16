@@ -1,0 +1,39 @@
+interface Named {
+  username: String
+}
+
+"""
+"
+""
+\"""
+""\""
+""\"""
+
+ssssss
+"""
+type User implements Named {
+    id: ID!
+    username: String
+    avatar_url(size: Int = 9): Url
+}
+type Admin implements Named {
+    id: ID!
+    username: String
+    role: [String]!
+}
+
+scalar Url
+
+union AllUser = User | Admin
+
+enum Direction {
+  NORTH
+  EAST
+  SOUTH
+  WEST
+}
+
+input Point2D {
+  x: Float
+  y_: Float
+}
