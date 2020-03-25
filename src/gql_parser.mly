@@ -10,9 +10,12 @@
 %token <string> STRING
 %token <string> NAME
 
+
+%token AMP
+
+(* Punctuators *)
 %token BANG
 %token DOLLAR
-%token AMP
 %token LEFT_PAREN
 %token RIGHT_PAREN
 %token SPREAD
@@ -45,12 +48,11 @@
 
 %token EOF
 
-(* Opening the Types so that the grammars understand the GraphQL types *)
 %{
-  open Types
+  open Gql_ast
 %}
 
-%start <Types.document> prog
+%start <Gql_ast.document> prog
 %%
 
 prog:
@@ -60,25 +62,27 @@ prog:
 read_definitions:
   | schema_def = read_schema_definition
     {
-      SchemaDefinition schema_def
+      TypeSystemDefinition(SchemaDefinition schema_def)
     }
   | type_def = read_type_definition
     {
-      TypeDefinition type_def
+      TypeSystemDefinition(TypeDefinition type_def)
     }
   | schema_ext = read_schema_extension
     {
-      SchemaExtension schema_ext
+      TypeSystemExtension(SchemaExtension)
     }
   ;
 
+(* https://facebook.github.io/graphql/June2018/#SchemaDefinition *)
 read_schema_definition:
   | SCHEMA
+    directives = read_directives?
     LEFT_BRACE
-    operations = read_operation_type_definition*
+    operations = read_root_operation_type_definition*
     RIGHT_BRACE
     {
-      operations
+      SchemaDefinition operations
     }
   ;
 
@@ -89,7 +93,7 @@ read_schema_extension:
       operations
     }
 
-read_operation_type_definition:
+read_root_operation_type_definition:
   | QUERY COLON name = read_name
     {
       Query name
@@ -219,7 +223,7 @@ read_field_definition:
     }
   ;
 
-read_directive:
+read_directives:
   | AT
     name = read_name
     arguments = read_arguments?
