@@ -18,11 +18,23 @@ type const_value = [
   | `Assoc of (string * const_value) list
 ]
 
+type argument = {
+  name : string;
+  value : const_value; 
+}
+
+type arguments = argument list
+
 type input_value = {
   description: string option;
   name : string;
   typ: typ;
   default_value: const_value option
+}
+
+type directive = {
+  name : string;
+  arguments: arguments option;  
 }
 
 type field_definition = {
@@ -59,6 +71,7 @@ type interface_type_definition = {
   description: string option;
   name: string;
   fields: field_definition list;
+  directives: directive list;
 }
 
 type union_type_definition = {

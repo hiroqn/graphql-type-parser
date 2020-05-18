@@ -1,4 +1,4 @@
-interface Named {
+interface Named @onObject(arg: "value") {
   username: String
 }
 
